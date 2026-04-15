@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { useNavigate } from "react-router";
 
 const NewBook = ({ onBookAdded }) => {
+    const navigate = useNavigate();
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [rating, setRating] = useState("");
@@ -70,7 +72,7 @@ const NewBook = ({ onBookAdded }) => {
                                     value={title}
                                     onChange={handleTitleChange}
                                 />
-                            </Form.Group>-ca
+                            </Form.Group>
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-3" controlId="author">
@@ -132,9 +134,14 @@ const NewBook = ({ onBookAdded }) => {
                                 checked={available}
                                 onChange={handleAvailabilityChange}
                             />
-                            <Button variant="primary" type="submit">
-                                Agregar lectura
-                            </Button>
+                            <div className="d-flex gap-2">
+                                <Button variant="secondary" onClick={() => navigate("/library")}>
+                                    Volver
+                                </Button>
+                                <Button variant="primary" type="submit">
+                                    Agregar lectura
+                                </Button>
+                            </div>
                         </Col>
                     </Row>
                 </Form>

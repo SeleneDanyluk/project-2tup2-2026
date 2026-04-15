@@ -14,6 +14,7 @@ const Books = ({ books, onDelete }) => {
                     pageCount={book.pageCount}
                     imageUrl={book.imageUrl}
                     available={book.available}
+                    summary={book.summary}
                     onDelete={onDelete}
                 />
             ))}

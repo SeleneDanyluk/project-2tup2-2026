@@ -1,10 +1,28 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ConfirmDeleteModal from '../ui/ConfirmDeleteModal';
 
-const BookItem = ({ id, title, author, rating, pageCount, imageUrl, available, onDelete }) => {
+const BookItem = ({ id, title, author, rating, pageCount, imageUrl, available, summary, onDelete }) => {
     const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate(`${id}`, {
+            state: {
+                book: {
+                    title,
+                    author,
+                    rating,
+                    pageCount,
+                    summary,
+                    imageUrl,
+                    available,
+                },
+            },
+        });
+    };
 
     const handleDeleteClick = () => {
         setShowModal(true);
@@ -31,9 +49,14 @@ const BookItem = ({ id, title, author, rating, pageCount, imageUrl, available, o
                         <p>{pageCount} páginas</p>
                         <p>{available ? "Disponible" : "Reservado"}</p>
                     </div>
-                    <Button variant="danger" onClick={handleDeleteClick}>
-                        Eliminar
-                    </Button>
+                    <div className="d-flex gap-2">
+                        <Button variant="primary" onClick={handleClick}>
+                            Seleccionar libro
+                        </Button>
+                        <Button variant="danger" onClick={handleDeleteClick}>
+                            Eliminar
+                        </Button>
+                    </div>
                 </Card.Body>
             </Card>
             <ConfirmDeleteModal

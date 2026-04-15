@@ -1,7 +1,9 @@
-import React from 'react'
 import { useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router';
+import { Button } from 'react-bootstrap';
 import NewBook from '../newBook/NewBook';
 import Books from '../books/Books';
+import BookDetails from '../bookDetails/BookDetails';
 
 const booksInitial = [
     {
@@ -53,16 +55,16 @@ const booksInitial = [
             "En un mundo gobernado por un régimen totalitario, un hombre lucha contra la vigilancia constante y la manipulación de la verdad.",
     },
 ];
-const Dashboard = () => {
 
+const Dashboard = ({ onLogout }) => {
     const [books, setBooks] = useState(booksInitial);
+    const navigate = useNavigate();
 
     const handleBookAdded = (enteredBook) => {
         const newBook = {
             ...enteredBook,
             id: Math.random(),
         };
-
         setBooks((prevBooks) => [newBook, ...prevBooks]);
     };
 
@@ -70,14 +72,42 @@ const Dashboard = () => {
         setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
     };
 
+    const handleNavigateAddBook = () => {
+        navigate("/library/add-book", { replace: true });
+    };
+
+    const handleLogout = () => {
+        onLogout();
+        navigate("/login");
+    };
+
     return (
         <div>
-            <h1>Book Champions!</h1>
-            <h3>Libros!</h3>
-            <NewBook onBookAdded={handleBookAdded} />
-            <Books books={books} onDelete={handleDeleteBook} />
+            <div className="d-flex justify-content-end gap-2 p-2">
+                <Button variant="success" onClick={handleNavigateAddBook}>
+                    Agregar libro
+                </Button>
+                <Button variant="secondary" onClick={handleLogout}>
+                    Cerrar sesión
+                </Button>
+            </div>
+            <h2 className="text-center">Book champions app</h2>
+            <p className="text-center">¡Quiero leer libros!</p>
+            <Routes>
+                <Route
+                    index
+                    element={
+                        <Books books={books} onDelete={handleDeleteBook} />
+                    }
+                />
+                <Route
+                    path="add-book"
+                    element={<NewBook onBookAdded={handleBookAdded} />}
+                />
+                <Route path=":id" element={<BookDetails />} />
+            </Routes>
         </div>
-    )
-}
+    );
+};
 
-export default Dashboard
+export default Dashboard;
