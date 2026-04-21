@@ -1,28 +1,12 @@
 import {Router} from "express";
+import { getAllBooks, getBookById, createBook, updateBook, deleteBook } from "../services/books.services.js";
 
 const router = Router();
 
-router.get("/books", (req, res) => {
-    res.send("Obteniendo libros")
-});
+router.get("/books", getAllBooks);
+router.get("/books/:id", getBookById);
+router.post("/books", createBook);
+router.put("/books/:id", updateBook);
+router.delete("/books/:id", deleteBook);
 
-router.get("/books/:id", (req, res) => {
-  const { id } = req.params;
-  res.send(`Obteniendo libro con id: ${id}`);
-});
-
-router.post("/books", (req, res) => {
-  res.send("Creando libro");
-});
-
-router.put("/books/:id", (req, res) => {
-  const { id } = req.params;
-  res.send(`Actualizando libro con id: ${id}`);
-});
-
-router.delete("/books/:id", (req, res) => {
-  const { id } = req.params;
-  res.send(`Borrando libro con id: ${id}`);
-});
-
-export default router
+export default router;
