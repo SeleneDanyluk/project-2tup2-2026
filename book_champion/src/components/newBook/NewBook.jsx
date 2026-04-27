@@ -39,13 +39,12 @@ const NewBook = ({ onBookAdded }) => {
         event.preventDefault();
 
         const bookData = {
-            title,
-            author,
-            rating: parseInt(rating, 10),
-            pageCount: parseInt(pageCount, 10),
-            imageUrl,
-            available,
-            summary: "Sin resumen",
+            "title": title,
+            "author": author,
+            "rating": rating,
+            "pageCount": pageCount,
+            "imageUrl": imageUrl,
+            "available": available
         };
 
         onBookAdded(bookData);
