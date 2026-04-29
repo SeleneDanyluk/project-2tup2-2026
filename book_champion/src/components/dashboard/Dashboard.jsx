@@ -1,21 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router';
+import { Routes, Route, useNavigate, useLocation } from 'react-router';
 import { Button } from 'react-bootstrap';
 import NewBook from '../newBook/NewBook';
 import Books from '../books/Books';
 import BookDetails from '../bookDetails/BookDetails';
-
+import { errorToast, successToast } from '../../utils/notifications';
 
 const Dashboard = ({ onLogout }) => {
     const [books, setBooks] = useState([]);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        fetch("http://localhost:3000/books")
-            .then(res => res.json())
-            .then(data => setBooks([...data]))
-            .catch(error => console.log(error))
-    }, []);
+        if (location.pathname === "/library") {
+            fetch("http://localhost:3000/books")
+                .then(res => res.json())
+                .then(data => setBooks([...data]))
+                .catch(error => console.log(error));
+        }
+    }, [location]);
 
     const handleBookAdded = (enteredBook) => {
         fetch("http://localhost:3000/books", {
@@ -27,13 +30,28 @@ const Dashboard = ({ onLogout }) => {
         })
             .then(res => res.json())
             .then(data => {
-                setBooks(prevBooks => [data, ...prevBooks])
+                setBooks(prevBooks => [data, ...prevBooks]);
+                successToast(`¡Libro "${data.title}" agregado correctamente!`);
+                navigate("/library");
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                errorToast("Error al agregar el libro");
+            });
     };
 
     const handleDeleteBook = (id) => {
-        setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+        fetch(`http://localhost:3000/books/${id}`, {
+            method: "DELETE"
+        })
+            .then(() => {
+                setBooks(prevBooks => prevBooks.filter(book => book.id !== id));
+                successToast("Libro eliminado correctamente");
+            })
+            .catch(err => {
+                console.log(err);
+                errorToast("Error al eliminar el libro");
+            });
     };
 
     const handleNavigateAddBook = () => {

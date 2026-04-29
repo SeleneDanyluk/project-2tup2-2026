@@ -1,10 +1,13 @@
 import './App.css';
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Login from './components/login/Login';
 import Dashboard from './components/dashboard/Dashboard';
 import NotFound from './components/notFound/NotFound';
 import Protected from './components/protected/Protected';
+import CleanupDemo from './components/cleanupDemo/CleanupDemo';
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -19,6 +22,7 @@ function App() {
 
     return (
         <div>
+            <ToastContainer />
             <BrowserRouter>
                 <Routes>
                     <Route path='/' element={<Navigate to='login' />} />
@@ -26,6 +30,7 @@ function App() {
                     <Route element={<Protected isSignedIn={loggedIn} />}>
                         <Route path='/library/*' element={<Dashboard onLogout={handleLogout} />} />
                     </Route>
+                    <Route path='/cleanup-demo' element={<CleanupDemo />} />
                     <Route path='*' element={<NotFound />} />
                 </Routes>
             </BrowserRouter>

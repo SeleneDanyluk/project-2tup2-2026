@@ -1,66 +1,64 @@
 import { useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
+import { errorToast, successToast } from "../../utils/notifications";
 
-const NewBook = ({ onBookAdded }) => {
+const NewBook = ({ book, isEditing = false, onBookAdded, onBookSaved }) => {
     const navigate = useNavigate();
-    const [title, setTitle] = useState("");
-    const [author, setAuthor] = useState("");
-    const [rating, setRating] = useState("");
-    const [pageCount, setPageCount] = useState("");
-    const [imageUrl, setImageUrl] = useState("");
-    const [available, setAvailable] = useState(false);
+    const [title, setTitle] = useState(book?.title ?? "");
+    const [author, setAuthor] = useState(book?.author ?? "");
+    const [rating, setRating] = useState(book?.rating ?? "");
+    const [pageCount, setPageCount] = useState(book?.pageCount ?? "");
+    const [imageUrl, setImageUrl] = useState(book?.imageUrl ?? "");
+    const [available, setAvailable] = useState(book?.available ?? false);
 
-    const handleTitleChange = (event) => {
-        setTitle(event.target.value);
-    };
-
-    const handleAuthorChange = (event) => {
-        setAuthor(event.target.value);
-    };
-
-    const handleRatingChange = (event) => {
-        setRating(event.target.value);
-    };
-
-    const handlePageCountChange = (event) => {
-        setPageCount(event.target.value);
-    };
-
-    const handleImageUrlChange = (event) => {
-        setImageUrl(event.target.value);
-    };
-
-    const handleAvailabilityChange = (event) => {
-        setAvailable(event.target.checked);
-    };
-
-    const handleAddBook = (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
 
+        if (!title || !author) {
+            errorToast("El autor y/o título son requeridos");
+            return;
+        }
+
         const bookData = {
-            "title": title,
-            "author": author,
-            "rating": rating,
-            "pageCount": pageCount,
-            "imageUrl": imageUrl,
-            "available": available
+            title,
+            author,
+            rating: parseInt(rating, 10),
+            pageCount: parseInt(pageCount, 10),
+            imageUrl,
+            available,
         };
 
-        onBookAdded(bookData);
-
-        setTitle("");
-        setAuthor("");
-        setRating("");
-        setPageCount("");
-        setImageUrl("");
-        setAvailable(false);
+        if (isEditing) {
+            fetch(`http://localhost:3000/books/${book.id}`, {
+                headers: { "Content-type": "application/json" },
+                method: "PUT",
+                body: JSON.stringify(bookData),
+            })
+                .then(res => res.json())
+                .then(() => {
+                    onBookSaved({ ...bookData, id: book.id });
+                    successToast(`¡Libro actualizado correctamente!`);
+                })
+                .catch(err => {
+                    console.log(err);
+                    errorToast("Error al actualizar el libro");
+                });
+        } else {
+            onBookAdded(bookData);
+            setTitle("");
+            setAuthor("");
+            setRating("");
+            setPageCount("");
+            setImageUrl("");
+            setAvailable(false);
+        }
     };
 
     return (
         <Card className="m-4 w-50" bg="success">
             <Card.Body>
-                <Form className="text-white" onSubmit={handleAddBook}>
+                <Form className="text-white" onSubmit={handleSubmit}>
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-3" controlId="title">
@@ -69,7 +67,7 @@ const NewBook = ({ onBookAdded }) => {
                                     type="text"
                                     placeholder="Ingresar título"
                                     value={title}
-                                    onChange={handleTitleChange}
+                                    onChange={e => setTitle(e.target.value)}
                                 />
                             </Form.Group>
                         </Col>
@@ -80,7 +78,7 @@ const NewBook = ({ onBookAdded }) => {
                                     type="text"
                                     placeholder="Ingresar autor"
                                     value={author}
-                                    onChange={handleAuthorChange}
+                                    onChange={e => setAuthor(e.target.value)}
                                 />
                             </Form.Group>
                         </Col>
@@ -95,7 +93,7 @@ const NewBook = ({ onBookAdded }) => {
                                     max={5}
                                     min={0}
                                     value={rating}
-                                    onChange={handleRatingChange}
+                                    onChange={e => setRating(e.target.value)}
                                 />
                             </Form.Group>
                         </Col>
@@ -107,7 +105,7 @@ const NewBook = ({ onBookAdded }) => {
                                     placeholder="Ingresar cantidad de páginas"
                                     min={1}
                                     value={pageCount}
-                                    onChange={handlePageCountChange}
+                                    onChange={e => setPageCount(e.target.value)}
                                 />
                             </Form.Group>
                         </Col>
@@ -119,7 +117,7 @@ const NewBook = ({ onBookAdded }) => {
                                 type="text"
                                 placeholder="Ingresar url de imagen"
                                 value={imageUrl}
-                                onChange={handleImageUrlChange}
+                                onChange={e => setImageUrl(e.target.value)}
                             />
                         </Form.Group>
                     </Row>
@@ -131,14 +129,16 @@ const NewBook = ({ onBookAdded }) => {
                                 className="mb-3"
                                 label="¿Disponible?"
                                 checked={available}
-                                onChange={handleAvailabilityChange}
+                                onChange={e => setAvailable(e.target.checked)}
                             />
                             <div className="d-flex gap-2">
-                                <Button variant="secondary" onClick={() => navigate("/library")}>
-                                    Volver
-                                </Button>
+                                {!isEditing && (
+                                    <Button variant="secondary" onClick={() => navigate("/library")}>
+                                        Volver
+                                    </Button>
+                                )}
                                 <Button variant="primary" type="submit">
-                                    Agregar lectura
+                                    {isEditing ? "Editar lectura" : "Agregar lectura"}
                                 </Button>
                             </div>
                         </Col>
