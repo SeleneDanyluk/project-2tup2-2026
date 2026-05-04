@@ -7,7 +7,6 @@ import Login from './components/login/Login';
 import Dashboard from './components/dashboard/Dashboard';
 import NotFound from './components/notFound/NotFound';
 import Protected from './components/protected/Protected';
-import CleanupDemo from './components/cleanupDemo/CleanupDemo';
 
 function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
