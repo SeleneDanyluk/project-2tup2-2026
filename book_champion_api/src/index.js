@@ -1,6 +1,7 @@
 import express from "express";
 import { PORT } from "./config.js";
 import bookRoutes from "./routes/books.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import { sequelize } from "./db.js";
 import "./models/Book.js";
 
@@ -15,6 +16,7 @@ try {
     next();
   });
   app.use(bookRoutes);
+  app.use(authRoutes);
 
   await sequelize.sync();
 
