@@ -3,6 +3,24 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
 
 
+export const verifyToken = (req, res, next) => {
+    const header = req.header("Authorization") || "";
+
+    const token = header.split(" ")[1]; // Extrae el token del formato "Bearer <token>
+
+    if (!token)
+        return res.status(401).send({ message: "No autorizado" });
+
+    try {
+        const payload = jwt.verify(token, 'programacion3-2025'); // Verifica el token con la clave secreta
+        console.log(payload);
+        next(); // Si el token es válido, continúa con la siguiente función del middleware
+    } catch (error) {
+        return res.status(401).send({ message: "Token inválido" });
+    }
+}
+
+
 export const registerUser = async (req, res) => {
 
     // Extrae name, email y password del body de la request

@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { Button, Card, Col, Form, FormGroup, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 import { errorToast, successToast } from '../../utils/notifications';
+import { AuthenticationContext } from '../services/auth/auth.context';
 
-const Login = ({ onLogin }) => {
+const Login = () => {
 	const navigate = useNavigate();
+	const { handleUserLogin } = useContext(AuthenticationContext);
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -60,13 +62,11 @@ const Login = ({ onLogin }) => {
 
 			const token = await response.json();
 
-			localStorage.setItem('token', token);
-
 			setErrors({ email: false, password: false });
 
 			successToast('Inicio de sesión exitoso');
 
-			onLogin();
+			handleUserLogin(token);
 
 			navigate('/library');
 		} catch (error) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router';
 import { Button } from 'react-bootstrap';
 
@@ -7,14 +7,20 @@ import Books from '../books/Books';
 import BookDetails from '../bookDetails/BookDetails';
 
 import { errorToast, successToast, infoToast } from '../../utils/notifications';
+import { AuthenticationContext } from '../services/auth/auth.context';
 
-const Dashboard = ({ onLogout }) => {
+const Dashboard = () => {
     const [books, setBooks] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
+    const { token, handleUserLogout } = useContext(AuthenticationContext);
 
 	useEffect(() => {
-		fetch('http://localhost:3000/books')
+		fetch('http://localhost:3000/books', {
+			headers: {
+				"Authorization": `Bearer ${token}`
+			}
+		})
 			.then((res) => {
 				if (!res.ok) {
 					throw new Error('No se pudieron cargar los libros');
@@ -78,7 +84,7 @@ const Dashboard = ({ onLogout }) => {
 	};
 
 	const handleLogout = () => {
-		onLogout();
+		handleUserLogout();
 		infoToast('Sesión cerrada');
 		navigate('/login');
 	};
